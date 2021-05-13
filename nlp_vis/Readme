@@ -1,0 +1,7 @@
+Directories:
+1. "my_predictor" folder contains the ktrain-wrapped model to be tested and can be swapped out for analysis
+2. "Equity-Evaluation-Corpus.csv" is downloaded already for evaluation
+3. "class"_"sentiment".csv are output at runtime after running the Equity Evaluation Corpus against the model
+-if available, existing csv files will be used by visualizer instead generating new data
+-DELETE existing csv files from the root directory in order to generate new tests on the EEC
+
