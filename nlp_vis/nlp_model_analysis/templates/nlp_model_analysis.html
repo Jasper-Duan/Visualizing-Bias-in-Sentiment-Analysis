@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<div class="row">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ nlp_info.name }}</h5>
+            <p class="card-text">{{ nlp_info.description }}</p>
+        </div>
+         <form id="sentence_query" action="{% url "query_sentence" %}"  method="get" >
+            <input type="text" name = "q">
+            <input type="submit" value="predict"/>
+        </form>
+        <div id="sentence_response"></div>
+        
+        <div id="gender_bias_metrics"></div>
+
+        <div id="racial_bias_metrics"></div>
+    </div>
+</div>
+<script>
+
+var display_bias_metrics = function(data, class_a, class_b, title, divID){
+    //dataload = data
+    data_keys = []
+    data.forEach(v => data_keys.push(v.sentiment))
+
+    sent_a = []
+    data.forEach(v => sent_a.push(v.probability[class_a]))
+    var trace1 = {
+      x: sent_a,
+      y: data_keys,
+      name: class_a,
+      orientation: 'h',
+      marker: {
+        color: 'rgba(55,128,191,0.6)',
+        width: 1
+      },
+      type: 'bar'
+    };
+
+    sent_b = []
+    data.forEach(v => sent_b.push(v.probability[class_b]))
+    var trace2 = {
+      x: sent_b,
+      y: data_keys,
+      name: class_b,
+      orientation: 'h',
+      type: 'bar',
+      marker: {
+        color: 'rgba(255,153,51,0.6)',
+        width: 1
+      }
+    };
+
+    var data = [trace1, trace2];
+
+    var layout = {
+      title: title,
+      barmode: 'stack'
+    };
+
+    Plotly.newPlot(divID, data, layout);
+}
+
+var fetch_gender = d3.json("{% url "gender_bias_metrics" %}", function(error, data) {
+     console.log(data);
+ });
+//var dataload
+fetch_gender.then(function(data){
+    display_bias_metrics(data, "female", "male", "Gender Sentiment Distribution", "gender_bias_metrics")
+});
+
+
+var fetch_racial = d3.json("{% url "racial_bias_metrics" %}", function(error, data) {
+     console.log(data);
+});
+//var dataload
+fetch_racial.then(function(data){
+    display_bias_metrics(data, "white", "black", "Racial Sentiment Distribution", "racial_bias_metrics")
+});
+
+
+
+const form = document.getElementById('sentence_query');
+const log = document.getElementById('sentence_response');
+function logSubmit(event) {
+  log.textContent = `Form Submitted! Time stamp: ${event.timeStamp}`;
+  d3.json("{% url "racial_bias_metrics" %}")
+  event.preventDefault();
+}
+//form.addEventListener('submit', logSubmit);
+
+</script>
+{% endblock %}
+
+<!-- data_csv = `sentiment,female,male
+    <div style="width:200;height:200">
+        {{ wordcloud | safe}}
+    </div>
+ -->
