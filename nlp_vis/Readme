@@ -5,3 +5,7 @@ Directories:
 -if available, existing csv files will be used by visualizer instead generating new data
 -DELETE existing csv files from the root directory in order to generate new tests on the EEC
 
+Disclaimer:
+
+Not meant for deployment - SECRET_KEY, DEBUG, and other configurations need to be customized
+in nlp_vis/settings.py
